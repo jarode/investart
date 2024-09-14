@@ -1,0 +1,29 @@
+@extends($activeTemplate . 'layouts.master')
+@section('content')
+    <div class="dashboard position-relative">
+        <div class="dashboard-body">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <div class="card custom--card">
+                            <div class="card-header">
+                                <h5 class="card-title">@lang('Case Creator KYC Form')</h5>
+                            </div>
+                            <div class="card-body">
+                                <form action="{{ route('user.case.creator.kyc.submit') }}" method="post" enctype="multipart/form-data">
+                                    @csrf
+
+                                    <x-viser-form identifier="act" identifierValue="ckyc" />
+
+                                    <div class="form-group">
+                                        <button type="submit" class="btn btn--base w-100">@lang('Submit')</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection
