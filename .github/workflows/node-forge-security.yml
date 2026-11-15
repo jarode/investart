@@ -1,0 +1,38 @@
+name: Verify node-forge security update
+on:
+  push:
+    branches:
+      - security/fix-node-forge-ghsa-554w-20261115
+  pull_request:
+    paths:
+      - package.json
+      - package-lock.json
+      - .github/workflows/node-forge-security.yml
+  workflow_dispatch:
+jobs:
+  security-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      NODE_ENV: development
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - name: Verify patched version in lockfile
+        run: node -e "const l=require('./package-lock.json'); const v=l.packages?.['node_modules/node-forge']?.version || l.dependencies?.['node-forge']?.version; if(v!=='1.3.2') { console.error('Unexpected node-forge:',v); process.exit(1); }"
+      - name: Install dependencies (including build tools)
+        run: npm ci --include=dev --legacy-peer-deps --no-audit --no-fund
+      - name: Check installed node-forge
+        run: |
+          node -e "const v=require('node-forge/package.json').version; if(v!=='1.3.2') { console.error('Unexpected installed node-forge:',v); process.exit(1); }"
+          npm ls node-forge --depth=4
+      - name: Compile Laravel Mix assets if sources are available
+        run: |
+          if [ -f resources/js/app.js ] && [ -f resources/sass/app.scss ]; then
+            NODE_OPTIONS=--openssl-legacy-provider npm run production
+          else
+            echo '::warning::Build omitted: pre-existing repository lacks resources/js/app.js and resources/sass/app.scss.'
+          fi
