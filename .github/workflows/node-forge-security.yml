@@ -2,7 +2,7 @@ name: Verify node-forge security update
 on:
   push:
     branches:
-      - security/fix-node-forge-ghsa-554w-20261115
+      - security/node-forge-1.4.3-20261115
   pull_request:
     paths:
       - package.json
@@ -22,12 +22,12 @@ jobs:
           node-version: '20'
           cache: npm
       - name: Verify patched version in lockfile
-        run: node -e "const l=require('./package-lock.json'); const v=l.packages?.['node_modules/node-forge']?.version || l.dependencies?.['node-forge']?.version; if(v!=='1.3.2') { console.error('Unexpected node-forge:',v); process.exit(1); }"
+        run: node -e "const l=require('./package-lock.json'); const v=l.packages?.['node_modules/node-forge']?.version || l.dependencies?.['node-forge']?.version; if(v!=='1.4.3') { console.error('Unexpected node-forge:',v); process.exit(1); }"
       - name: Install dependencies (including build tools)
         run: npm ci --include=dev --legacy-peer-deps --no-audit --no-fund
       - name: Check installed node-forge
         run: |
-          node -e "const v=require('node-forge/package.json').version; if(v!=='1.3.2') { console.error('Unexpected installed node-forge:',v); process.exit(1); }"
+          node -e "const v=require('node-forge/package.json').version; if(v!=='1.4.3') { console.error('Unexpected installed node-forge:',v); process.exit(1); }"
           npm ls node-forge --depth=4
       - name: Compile Laravel Mix assets if sources are available
         run: |
